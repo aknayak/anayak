@@ -1,0 +1,6 @@
+Modify rootlogon.C  setPaths.csh to point to your analysis working area
+compile in MiniTree/Selection/src directory using command make
+then comile in current directory
+You can pass either a single root file or a ascii file containing list of root files as input. The functions are written accordingly.
+Check myAnalysis.C and selectEvent.C
+Once compiled, run using ./myAnalysis command. 
