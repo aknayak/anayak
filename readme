@@ -1,0 +1,2 @@
+checkout MiniTree package using the command
+cvs co -d MiniTree UserCode/anayak/MiniTree
