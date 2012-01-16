@@ -1,2 +1,47 @@
-checkout MiniTree package using the command
+How to use the code :
+
+cmsrel CMSSW_X_X_X
+cd CMSSW_X_X_X/src
+cmsenv
+
+#checkout MiniTree package using the command
 cvs co -d MiniTree UserCode/anayak/MiniTree
+
+#For CMSSW_4_2_X : 
+#check out additional packages
+
+cvs co -r 1.44 RecoTauTag/tau_tags.txt
+addpkg -f RecoTauTag/tau_tags.txt
+cvs co -r benitezj_22july2011       CommonTools/ParticleFlow
+cvs co -r  CMSSW_4_2_8_patch4 DataFormats/PatCandidates
+cvs co -r  CMSSW_4_2_8_patch4 PhysicsTools/MVAComputer
+cvs co -r  V08-06-38      PhysicsTools/PatAlgos
+cvs co -r  CMSSW_4_2_8_patch4 RecoEgamma/ElectronIdentification
+cvs co -r  V02-04-17      RecoJets/Configuration
+cvs co -r  V04-01-00      RecoJets/JetAlgorithms
+cvs co -r  V05-05-03      RecoJets/JetProducers
+cvs up -r 1.3 PhysicsTools/MVAComputer/interface/MVAModuleHelper.h
+cvs up -r 1.43 PhysicsTools/PatAlgos/python/tools/tauTools.py
+cvs up -r 1.5 PhysicsTools/PatAlgos/plugins/PATSingleVertexSelector.cc
+cvs up -r 1.5 PhysicsTools/PatAlgos/plugins/PATSingleVertexSelector.h
+cvs up -r 1.30 DataFormats/PatCandidates/interface/Tau.h
+cvs up -r 1.3 DataFormats/PatCandidates/interface/TauCaloSpecific.h
+cvs up -r 1.6 DataFormats/PatCandidates/interface/TauPFSpecific.h
+cvs up -r 1.19 DataFormats/PatCandidates/src/Tau.cc
+cvs up -r 1.3 DataFormats/PatCandidates/src/TauCaloSpecific.cc
+cvs up -r 1.5 DataFormats/PatCandidates/src/TauPFSpecific.cc
+cvs up -r 1.59 DataFormats/PatCandidates/src/classes.h
+cvs up -r 1.65 DataFormats/PatCandidates/src/classes_def.xml
+
+#Then compile 
+scramv1 b -r -j 4 
+
+==================================================================
+#To do the offline analysis an example code is available.
+#check out the code using
+
+cvs co -d ExampleAnalysis UserCode/anayak/ExampleAnalysis 
+
+#This is outside of CMSSW. 
+#To use the code check ExampleAnalysis/readme
+
