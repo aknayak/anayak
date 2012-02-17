@@ -53,7 +53,13 @@ class Reader
   MyEvent *GetNewEventFromList(unsigned int ientry); //for more than one files
 
   Long64_t LoadTree(Long64_t entry);
-  
+
+  vector<MyJet> getJets(MyEvent* ev, string algo);
+  vector<MyElectron> getElectrons(MyEvent* ev, string algo);
+  vector<MyMuon> getMuons(MyEvent* ev, string algo);
+  vector<MyTau> getTaus(MyEvent* ev, string algo);
+
+
  private :
   TTree *myTree;
   //TChain *chain;

@@ -1,5 +1,6 @@
 #include "MiniTree/Selection/interface/MyEvent.h"
 #include "MiniTree/Selection/interface/Reader.h"
+#include "MiniTree/Selection/interface/ObjectSelector.hh"
 
 #ifdef __CINT__
 
@@ -28,6 +29,7 @@
 #pragma link C++ class std::vector<MyTau>;
 #pragma link C++ class MyEvent+;
 #pragma link C++ class Reader+;
+#pragma link C++ class ObjectSelector+;
 #endif
 
 
