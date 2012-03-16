@@ -36,6 +36,16 @@ cvs up -r 1.65 DataFormats/PatCandidates/src/classes_def.xml
 #Then compile 
 scramv1 b -r -j 4 
 
+#To run the code :
+cd MiniTree/Selection/test
+cmsenv
+#to run over data sample
+cmsRun myselectionDataLocal_cfg.py
+#OR to run over MC sample
+cmsRun myselectionMCLocal_cfg.py
+
+#input file need to be changed 
+
 ==================================================================
 #To do the offline analysis an example code is available.
 #check out the code using
