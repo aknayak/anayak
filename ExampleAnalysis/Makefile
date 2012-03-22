@@ -4,9 +4,9 @@ LIBS =  -L$(ROOTSYS)/lib  -lCint -lNew \
         -lGpad -lGui  \
         -L/usr/X11R6/lib -lm -ldl \
         -lm -lpthread -rdynamic \
-	-L/soft/lip-sw/cmssw/users/anayak/CMS/NewFWK/myAnalysis/MiniTree/Selection/src -lMyEvent 
+	-L${PWD}/MiniTree/Selection/src -lMyEvent 
 OPTCOMP =  -g  -Wno-deprecated
-CXXFLAGS = --exceptions -I. -I/$(ROOTSYS)/include -I/usr/include -I/soft/lip-sw/cmssw/users/anayak/CMS/NewFWK/myAnalysis/MiniTree/Selection/interface -I/soft/lip-sw/cmssw/users/anayak/CMS/NewFWK/myAnalysis/MiniTree/Selection/src
+CXXFLAGS = --exceptions -I. -I/$(ROOTSYS)/include -I/usr/include -I${PWD}/MiniTree/Selection/interface -I${PWD}/MiniTree/Selection/src
 NOM = myAnalysis
 all:    $(NOM)
 $(NOM): $(NOM).o
