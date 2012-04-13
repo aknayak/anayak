@@ -58,7 +58,7 @@ class Reader
   vector<MyElectron> getElectrons(MyEvent* ev, string algo);
   vector<MyMuon> getMuons(MyEvent* ev, string algo);
   vector<MyTau> getTaus(MyEvent* ev, string algo);
-
+  MyMET getMET(MyEvent* ev, string algo);
 
  private :
   TTree *myTree;

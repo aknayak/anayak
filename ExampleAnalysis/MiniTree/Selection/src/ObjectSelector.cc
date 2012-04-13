@@ -5,7 +5,7 @@
 ClassImp(ObjectSelector)
 
 using namespace std;
-void ObjectSelector::preSelectElectrons(vector<int> * e_i, const vector<MyElectron> & vE , MyVertex & vertex){
+void ObjectSelector::preSelectElectrons(vector<int> * e_i, const vector<MyElectron> & vE , MyVertex & vertex, bool isPFlow){
   
   for(unsigned int i=0;i<vE.size();i++){
 
@@ -17,7 +17,7 @@ void ObjectSelector::preSelectElectrons(vector<int> * e_i, const vector<MyElectr
     double eRelIso  = e->RelIso;
     double d0       = fabs(e->D0);
     std::map<std::string, float>idWPs = e->eidWPs;
-    float eid = idWPs["eidTightMC"];
+    float eid = (isPFlow) ? idWPs["eidTightMC"] : idWPs["simpleEleId70cIso"];
     bool passId = (int(eid) & 0x1);
     bool isNotFromConversion = ((int(eid) >> 2) & 0x1);
     bool isEcalDriven = (e->isEcalDriven > 0 || e->isPFlow > 0);
@@ -37,7 +37,7 @@ void ObjectSelector::preSelectElectrons(vector<int> * e_i, const vector<MyElectr
   }
 }
 
-void ObjectSelector::preSelectMuons(vector<int> * m_i, const vector<MyMuon> & vM , MyVertex & vertex){
+void ObjectSelector::preSelectMuons(vector<int> * m_i, const vector<MyMuon> & vM , MyVertex & vertex, bool isPFlow){
   
   for( int i=0;i< (int) vM.size();i++){
     
@@ -46,7 +46,7 @@ void ObjectSelector::preSelectMuons(vector<int> * m_i, const vector<MyMuon> & vM
     double mEta     = TMath::Abs(m->p4.eta());
     double mPt      = TMath::Abs(m->p4.pt());
     double mD0      = fabs(m->D0);
-    double mRelIso  = m->RelIso;
+    double mRelIso  = (isPFlow) ? m->RelIso : m->UserPFRelIso;
 
     bool passId = (m->GlobalMuonPromptTight > 0);
 
@@ -116,7 +116,7 @@ void ObjectSelector::preSelectJets( string jetAlgo, vector<int> * j_i, const vec
       { j_i->push_back(i);}
   }
 }
-bool ObjectSelector::looseMuonVeto( int selectedMuon, const vector<MyMuon> & vM){
+bool ObjectSelector::looseMuonVeto( int selectedMuon, const vector<MyMuon> & vM, bool isPFlow){
 
   bool looseVeto(false);
   
@@ -128,7 +128,7 @@ bool ObjectSelector::looseMuonVeto( int selectedMuon, const vector<MyMuon> & vM)
     
     double mEta     = TMath::Abs(m->p4.eta());
     double mPt      = TMath::Abs(m->p4.pt());
-    double mRelIso  = m->RelIso;
+    double mRelIso  = (isPFlow) ? m->RelIso : m->UserPFRelIso;
     
     //see if this muon is glogal
     static const unsigned int GlobalMuon     =  1<<1;
@@ -144,7 +144,7 @@ bool ObjectSelector::looseMuonVeto( int selectedMuon, const vector<MyMuon> & vM)
     
 }
 
-bool ObjectSelector::looseElectronVeto(int selectedElectron, const vector<MyElectron> & vE){
+bool ObjectSelector::looseElectronVeto(int selectedElectron, const vector<MyElectron> & vE, bool isPFlow){
   bool looseVeto(false);
   for( int i=0;i< (int) vE.size();i++ ){
     if(i==selectedElectron){ continue; }
@@ -155,7 +155,7 @@ bool ObjectSelector::looseElectronVeto(int selectedElectron, const vector<MyElec
     double eEt       = TMath::Abs(e->p4.Et());
     double eRelIso   = e->RelIso;
     std::map<std::string, float>idWPs = e->eidWPs;
-    float eid = idWPs["eidLooseMC"];
+    float eid = (isPFlow) ? idWPs["eidLooseMC"] : idWPs["simpleEleId90cIso"];
     bool id = (int(eid) & 0x1);
     double minDR2mu  = 0.4;
         

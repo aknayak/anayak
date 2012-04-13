@@ -44,7 +44,7 @@ public :
 
     // Jets ///////////////////////////////////////////
     JET_PT_MIN_        = 20;
-    JET_ETA_MAX_       = 2.4; 
+    JET_ETA_MAX_       = 2.3; 
     JET_EMF_MIN_       = 0.01;
     JET_LEPTON_DRMIN_  = 0.5;
     //////////////////////////////////////////////////
@@ -52,7 +52,7 @@ public :
     // electron //////////////////////////////////////
     E_RELISO_MAX_       = 0.1;
     E_ETA_MAX_          = 2.5;
-    E_ET_MIN_           = 30;
+    E_ET_MIN_           = 20;
     E_D0_MAX_           = 0.04;
 
     LOOSE_E_RELISO_MAX_ = 0.2;
@@ -63,7 +63,7 @@ public :
 
 
     // muon //////////////////////////////////////////
-    M_RELISO_MAX_  = 0.2; 
+    M_RELISO_MAX_  = 0.1; 
     M_PT_MIN_      = 20;  
     M_ETA_MAX_     = 2.1; 
     M_D0_MAX_      = 0.02;
@@ -76,21 +76,21 @@ public :
 
 
     // taus ///////////////////////////////////////////////////////
-    TAU_ETA_MAX_          = 2.4;
+    TAU_ETA_MAX_          = 2.3;
     TAU_PT_MIN_           = 15.0;
     TAU_D0_MAX_           = 400;// was 200
     
   }
 
   // preselection of objects
-  void preSelectElectrons(vector<int> * e_i, const vector<MyElectron> & vE , MyVertex & vertex);
-  void preSelectMuons(vector<int> * m_i, const vector<MyMuon> & vM , MyVertex & vertex);
+  void preSelectElectrons(vector<int> * e_i, const vector<MyElectron> & vE , MyVertex & vertex, bool isPFlow=false);
+  void preSelectMuons(vector<int> * m_i, const vector<MyMuon> & vM , MyVertex & vertex, bool isPFlow=false);
   void preSelectJets( string jetAlgo, vector<int> * j_i, const vector<MyJet> & vJ);
   void preSelectTaus( vector<int> * t_i, const vector<MyTau> & vT, int requiredProngs ,string type, MyVertex & vertex);
 
   //Loose Lepton veto
-  bool looseElectronVeto(int selectedElectron, const vector<MyElectron> & vE);
-  bool looseMuonVeto( int selectedMuon, const vector<MyMuon> & vM);
+  bool looseElectronVeto(int selectedElectron, const vector<MyElectron> & vE, bool isPFlow=false);
+  bool looseMuonVeto( int selectedMuon, const vector<MyMuon> & vM, bool isPFlow=false);
 
 
   // object cleaning
