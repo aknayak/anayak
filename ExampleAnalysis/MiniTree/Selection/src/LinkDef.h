@@ -1,7 +1,7 @@
 #include "MiniTree/Selection/interface/MyEvent.h"
 #include "MiniTree/Selection/interface/Reader.h"
 #include "MiniTree/Selection/interface/ObjectSelector.hh"
-
+#include "MiniTree/Selection/interface/HistogramPlotter.hh"
 #ifdef __CINT__
 
 #pragma link off all globals;
@@ -30,6 +30,7 @@
 #pragma link C++ class MyEvent+;
 #pragma link C++ class Reader+;
 #pragma link C++ class ObjectSelector+;
+#pragma link C++ class HistogramPlotter+;
 #endif
 
 

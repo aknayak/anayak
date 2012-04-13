@@ -34,7 +34,15 @@ MyJet::MyJet():
   jetIDLoose(false),
   etaetaMoment(0.),
   phiphiMoment(0.),
-  quality(0)
+  quality(0),
+  tau_againstElectronLoose(0), 
+  tau_againstElectronMedium(0), 
+  tau_againstElectronTight(0), 
+  tau_againstElectronMVA(0), 
+  tau_againstMuonLoose(0), 
+  tau_againstMuonMedium(0), 
+  tau_againstMuonTight(0) 
+
 {
 }
 
@@ -45,7 +53,9 @@ MyJet::~MyJet()
 void MyJet::Reset()
 {
   p4.SetCoordinates(0.0, 0.0, 0.0, 0.0);
-  
+  vertex.SetCoordinates(-999.0,-999.0,-999.0);
+  tau_vertex.SetCoordinates(-999.0,-999.0,-999.0);
+
   jetName = "";
   parton_id = 0;
   parton_mother_id = 0;
@@ -82,5 +92,12 @@ void MyJet::Reset()
   JECUncertainty = 1.0;
   bDiscriminator.clear();
   quality = 0;
-  vertex.SetCoordinates(-999.0,-999.0,-999.0);
+
+  tau_againstElectronLoose = 0; 
+  tau_againstElectronMedium = 0; 
+  tau_againstElectronTight = 0; 
+  tau_againstElectronMVA = 0; 
+  tau_againstMuonLoose = 0; 
+  tau_againstMuonMedium = 0; 
+  tau_againstMuonTight = 0; 
 }
