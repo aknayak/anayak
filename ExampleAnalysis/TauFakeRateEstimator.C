@@ -63,9 +63,10 @@ private :
 /////Fake Rate QCD Data ////
 void TauFakeRateEstimator::ComputeFakeRateDiJetData(const char* file_list,  string myKey, string tauIsoLabel, TString histoFiles_){
 
+  bool isPFlow = (myKey.find("PFlow") != string::npos) ? true : false;
   string eAlgo("PFlow"), mAlgo("PFlow"), jAlgo("PFlow"), tAlgo("PFlow");
-  if(myKey.find("PFlow") != string::npos)jAlgo = "PFlow", tAlgo = "PFlow";
-  else if(myKey.find("HPS") != string::npos)jAlgo = "JetsAK5PF", tAlgo = "TausHpsPFTau";
+  if(myKey.find("PFlow") != string::npos){jAlgo = "PFlow"; tAlgo = "PFlow";}
+  else if(myKey.find("HPS") != string::npos){jAlgo = "Jets"; tAlgo = "Taus"; mAlgo = "Muons", eAlgo = "Electrons";}
   
   evR = new Reader();
   
@@ -113,9 +114,9 @@ void TauFakeRateEstimator::ComputeFakeRateDiJetData(const char* file_list,  stri
 
     // preselect objects //
     vector<int> m_init; m_init.clear();
-    preSelectMuons(&m_init, pfMuons, Vertices[0]);
+    preSelectMuons(&m_init, pfMuons, Vertices[0], isPFlow);
     vector<int> e_init; e_init.clear();
-    preSelectElectrons(&e_init, pfElectrons, Vertices[0]);
+    preSelectElectrons(&e_init, pfElectrons, Vertices[0], isPFlow);
     vector<int> t_init; t_init.clear();
     preSelectTaus( &t_init, pfTaus, TAUPRONGS_, tauIsoLabel, Vertices[0]);
     vector<int> j_init; j_init.clear();
@@ -129,17 +130,20 @@ void TauFakeRateEstimator::ComputeFakeRateDiJetData(const char* file_list,  stri
     vector<int> j_afterLeptonRemoval; j_afterLeptonRemoval.clear();
     JetCleaning(pfJets, pfMuons, pfElectrons, pfTaus, &j_init, &j_afterLeptonRemoval, &m_init, &e_final, &t_final, DRMIN_JET, false);
     
-    // remove jets matched to trigger
+    // remove jets matched to trigger & apply dZ cut and antilepton discr
     vector<int> j_final; j_final.clear();
     int nTrigJet = 0;
     for(size_t ijet = 0; ijet < j_afterLeptonRemoval.size(); ijet++){
       int ind =  j_afterLeptonRemoval[ijet];
-      if(pfJets[ind].triggerJet_pt > 30)nTrigJet++;
+      if(pfJets[ind].triggerJet_pt > 40)nTrigJet++;
     }
     //if(nTrigJet)cout<<" nTriggered jet "<<nTrigJet<<endl;
+    double zvertex = Vertices[0].XYZ.z();
     for(size_t ijet = 0; ijet < j_afterLeptonRemoval.size(); ijet++){
       int ind =  j_afterLeptonRemoval[ijet];
-      if(nTrigJet == 1 && pfJets[ind].triggerJet_pt > 30) continue; //not to use trigger matched Jet
+      if(nTrigJet == 1 && pfJets[ind].triggerJet_pt > 40) continue; //not to use trigger matched Jet
+      if(fabs(zvertex - pfJets[ind].tau_vertex.z()) > 0.2 )continue; //dZ < 0.2
+      //if(pfJets[ind].tau_againstElectronMedium < 0.5 || pfJets[ind].tau_againstMuonMedium < 0.5)continue;  //discriminator against lepton
       j_final.push_back(ind);
     }
 
@@ -155,13 +159,13 @@ void TauFakeRateEstimator::ComputeFakeRateDiJetData(const char* file_list,  stri
       histos_["nvtx_alljet"]->Fill(nvtxs);
 
       //fill for selected taus
-      double mindr = 0.5; int jtau = -1;
+      double mindr = 0.5; //int jtau = -1;
       for(size_t itau = 0; itau < t_final.size(); itau++){
 	int ind_tau = t_final[itau];
 	double idr= DeltaR(pfTaus[ind_tau].p4, pfJets[ind_jet].p4);
 	if(idr < mindr){
 	  mindr = idr;
-	  jtau = ind_tau;
+	  //jtau = ind_tau;
 	}
       }
       if(mindr < 0.4){
@@ -190,9 +194,10 @@ void TauFakeRateEstimator::ComputeFakeRateDiJetData(const char* file_list,  stri
 /////Fake Rate QCD MC ////
 void TauFakeRateEstimator::ComputeFakeRateDiJetMC(string myKey, string tauIsoLabel, TString histoFiles_){
 
+  bool isPFlow = (myKey.find("PFlow") != string::npos) ? true : false;
   string eAlgo("PFlow"), mAlgo("PFlow"), jAlgo("PFlow"), tAlgo("PFlow");
-  if(myKey.find("PFlow") != string::npos)jAlgo = "PFlow", tAlgo = "PFlow";
-  else if(myKey.find("HPS") != string::npos)jAlgo = "JetsAK5PF", tAlgo = "TausHpsPFTau";
+  if(myKey.find("PFlow") != string::npos){jAlgo = "PFlow"; tAlgo = "PFlow";}
+  else if(myKey.find("HPS") != string::npos){jAlgo = "Jets"; tAlgo = "Taus"; mAlgo = "Muons"; eAlgo = "Electrons";}
 								 
 
   //create the file ////////////////////////////////
@@ -264,9 +269,9 @@ void TauFakeRateEstimator::ComputeFakeRateDiJetMC(string myKey, string tauIsoLab
       
       // preselect objects //
       vector<int> m_init; m_init.clear();
-      preSelectMuons(&m_init, pfMuons, Vertices[0]);
+      preSelectMuons(&m_init, pfMuons, Vertices[0], isPFlow);
       vector<int> e_init; e_init.clear();
-      preSelectElectrons(&e_init, pfElectrons, Vertices[0]);
+      preSelectElectrons(&e_init, pfElectrons, Vertices[0], isPFlow);
       vector<int> t_init; t_init.clear();
       preSelectTaus( &t_init, pfTaus, TAUPRONGS_, tauIsoLabel, Vertices[0]);
       vector<int> j_init; j_init.clear();
@@ -280,16 +285,19 @@ void TauFakeRateEstimator::ComputeFakeRateDiJetMC(string myKey, string tauIsoLab
       vector<int> j_afterLeptonRemoval; j_afterLeptonRemoval.clear();
       JetCleaning(pfJets, pfMuons, pfElectrons, pfTaus, &j_init, &j_afterLeptonRemoval, &m_init, &e_final, &t_final, DRMIN_JET, false);
       
-      // remove jets matched to trigger
+      // remove jets matched to trigger & apply dZ cut and antilepton discr
       vector<int> j_final; j_final.clear();
       int nTrigJet = 0;
       for(size_t ijet = 0; ijet < j_afterLeptonRemoval.size(); ijet++){
 	int ind =  j_afterLeptonRemoval[ijet];
-	if(pfJets[ind].triggerJet_pt > 30)nTrigJet++;
+	if(pfJets[ind].triggerJet_pt > 40)nTrigJet++;
       }
+      double zvertex = Vertices[0].XYZ.z();
       for(size_t ijet = 0; ijet < j_afterLeptonRemoval.size(); ijet++){
 	int ind =  j_afterLeptonRemoval[ijet];
-	if(nTrigJet == 1 && pfJets[ind].triggerJet_pt > 30) continue; //not to use trigger matched Jet
+	if(nTrigJet == 1 && pfJets[ind].triggerJet_pt > 40) continue; //not to use trigger matched Jet
+	if(fabs(zvertex - pfJets[ind].tau_vertex.z()) > 0.2 )continue; //dZ < 0.2
+	if(pfJets[ind].tau_againstElectronMedium < 0.5 || pfJets[ind].tau_againstMuonMedium < 0.5)continue;  //discriminator against lepton
 	j_final.push_back(ind);
       }
       
@@ -305,13 +313,13 @@ void TauFakeRateEstimator::ComputeFakeRateDiJetMC(string myKey, string tauIsoLab
 	histos_["nvtx_alljet"]->Fill(nvtxs, evtWeight);
 	
 	//fill for selected taus
-	double mindr = 0.5; int jtau = -1;
+	double mindr = 0.5; //int jtau = -1;
 	for(size_t itau = 0; itau < t_final.size(); itau++){
 	  int ind_tau = t_final[itau];
 	  double idr= DeltaR(pfTaus[ind_tau].p4, pfJets[ind_jet].p4);
 	  if(idr < mindr){
 	    mindr = idr;
-	    jtau = ind_tau;
+	    //jtau = ind_tau;
 	  }
 	}
 	if(mindr < 0.4){
@@ -341,9 +349,10 @@ void TauFakeRateEstimator::ComputeFakeRateDiJetMC(string myKey, string tauIsoLab
 ///W+Jet Fake rate ///////
 void TauFakeRateEstimator::ComputeFakeRateWJet(const char* file_list,  string myKey, string tauIsoLabel, bool isData, TString histoFiles_){
 
-  string eAlgo("PFlow"), mAlgo("PFlow"), jAlgo("PFlow"), tAlgo("PFlow");
-  if(myKey.find("PFlow") != string::npos)jAlgo = "PFlow", tAlgo = "PFlow";
-  else if(myKey.find("HPS") != string::npos)jAlgo = "JetsAK5PF", tAlgo = "TausHpsPFTau";
+  bool isPFlow = (myKey.find("PFlow") != string::npos) ? true : false;
+  string eAlgo("PFlow"), mAlgo("PFlow"), jAlgo("PFlow"), tAlgo("PFlow"), metAlgo("PFlow");
+  if(myKey.find("PFlow") != string::npos){jAlgo = "PFlow"; tAlgo = "PFlow";}
+  else if(myKey.find("HPS") != string::npos){jAlgo = "Jets"; tAlgo = "Taus"; metAlgo = "METsPF"; mAlgo = "Muons"; eAlgo = "Electrons";}
   
   
   evR = new Reader();
@@ -397,12 +406,13 @@ void TauFakeRateEstimator::ComputeFakeRateWJet(const char* file_list,  string my
     vector<MyElectron> pfElectrons = evR->getElectrons(ev, eAlgo);
     vector<MyTau> pfTaus = evR->getTaus(ev, tAlgo);
     vector<MyJet> pfJets = evR->getJets(ev, jAlgo);
+    MyMET met = evR->getMET(ev, metAlgo);
 
     // preselect objects //
     vector<int> m_init; m_init.clear();
-    preSelectMuons(&m_init, pfMuons, Vertices[0]);
+    preSelectMuons(&m_init, pfMuons, Vertices[0], isPFlow);
     vector<int> e_init; e_init.clear();
-    preSelectElectrons(&e_init, pfElectrons, Vertices[0]);
+    preSelectElectrons(&e_init, pfElectrons, Vertices[0], isPFlow);
     vector<int> t_init; t_init.clear();
     preSelectTaus( &t_init, pfTaus, TAUPRONGS_, tauIsoLabel, Vertices[0]);
     vector<int> j_init; j_init.clear();
@@ -413,9 +423,19 @@ void TauFakeRateEstimator::ComputeFakeRateWJet(const char* file_list,  string my
     ElectronCleaning( pfElectrons, pfMuons, &e_init, &e_final, &m_init, DRMIN_ELE);
     vector<int> t_final; t_final.clear();
     TauCleaning(pfTaus, pfMuons, pfElectrons, &t_init, &t_final, &m_init, &e_final, DRMIN_TAU);
-    vector<int> j_final; j_final.clear();
-    JetCleaning(pfJets, pfMuons, pfElectrons, pfTaus, &j_init, &j_final, &m_init, &e_final, &t_final, DRMIN_JET, false);
+    vector<int> j_afterLeptonRemoval; j_afterLeptonRemoval.clear();
+    JetCleaning(pfJets, pfMuons, pfElectrons, pfTaus, &j_init, &j_afterLeptonRemoval, &m_init, &e_final, &t_final, DRMIN_JET, false);
     
+    // apply dZ cut and antilepton discr
+    vector<int> j_final; j_final.clear();
+    double zvertex = Vertices[0].XYZ.z();
+    for(size_t ijet = 0; ijet < j_afterLeptonRemoval.size(); ijet++){
+      int ind =  j_afterLeptonRemoval[ijet];
+      if(fabs(zvertex - pfJets[ind].tau_vertex.z()) > 0.2 )continue; //dZ < 0.2
+      //if(pfJets[ind].tau_againstElectronMedium < 0.5 || pfJets[ind].tau_againstMuonMedium < 0.5)continue;  //discriminator against lepton
+      j_final.push_back(ind);
+    }
+
     //Apply Lepton selection//////////////////////////////
     //int nLepton = e_init.size() + m_init.size();
     int nLepton = m_init.size();  //only muon +jet events
@@ -423,19 +443,13 @@ void TauFakeRateEstimator::ComputeFakeRateWJet(const char* file_list,  string my
     if(e_final.size() > 0)continue;
 
     //see if we have loose muons
-    if( looseMuonVeto( m_init[0],pfMuons) ) continue;
+    if( looseMuonVeto( m_init[0],pfMuons, isPFlow) ) continue;
     // see if we have loose electrons
-    if( looseElectronVeto(-1,pfElectrons) ) continue;
+    if( looseElectronVeto(-1,pfElectrons, isPFlow) ) continue;
 
-    double leptonPt(0), deltaPhi(0);
-    vector<MyMET> mets = ev->mets;
-    if(mets.size() <= 0)continue;
-    MyMET met;
-    for(size_t imet = 0; imet < mets.size(); imet++){
-      if(mets[imet].metName.find("PFlow") != string::npos)met = mets[imet];
-    }
-
+    //Apply selection on mT(mu, MET)
     double metPt = met.p4.pt();
+    double leptonPt(0), deltaPhi(0);
     if(metPt < 30) continue;
     if( m_init.size() == 1 ){ 
       int m_i = m_init[0]; leptonPt = TMath::Abs(pfMuons[m_i].p4.pt());     
@@ -453,6 +467,7 @@ void TauFakeRateEstimator::ComputeFakeRateWJet(const char* file_list,  string my
     double nvtxs = Vertices.size();
     for(size_t ijet = 0; ijet < j_final.size(); ijet++){
       int ind_jet = j_final[ijet];
+
       histos_["pt_alljet"]->Fill(pfJets[ind_jet].p4.pt(), evtWeight);
       histos_["eta_alljet"]->Fill(pfJets[ind_jet].p4.eta(), evtWeight);
       histos_["phi_alljet"]->Fill(pfJets[ind_jet].p4.phi(), evtWeight);
@@ -461,13 +476,13 @@ void TauFakeRateEstimator::ComputeFakeRateWJet(const char* file_list,  string my
       histos_["nvtx_alljet"]->Fill(nvtxs, evtWeight);
 
       //fill for selected taus
-      double mindr = 0.5; int jtau = -1;
+      double mindr = 0.5; //int jtau = -1;
       for(size_t itau = 0; itau < t_final.size(); itau++){
 	int ind_tau = t_final[itau];
 	double idr= DeltaR(pfTaus[ind_tau].p4, pfJets[ind_jet].p4);
 	if(idr < mindr){
 	  mindr = idr;
-	  jtau = ind_tau;
+	  //jtau = ind_tau;
 	}
       }
       if(mindr < 0.4){
@@ -584,26 +599,16 @@ void TauFakeRateEstimator::DefineHistos()
 
 void TauFakeRateEstimator::processEvents()
 {
-
-  //ComputeFakeRateDiJetData("file_jet_data_runA", "HPS", "Loose", "TFR_DiJet_data_runA");
-  //ComputeFakeRateDiJetData("file_jet_data_runA", "HPS", "Medium", "TFR_DiJet_data_runA");
-  //ComputeFakeRateDiJetData("file_jet_data_runA", "HPS", "Tight", "TFR_DiJet_data_runA");
-  //ComputeFakeRateDiJetData("file_jet_data_runA", "HPS", "LooseDB", "TFR_DiJet_data_runA");
-  //ComputeFakeRateDiJetData("file_jet_data_runA", "HPS", "MediumDB", "TFR_DiJet_data_runA");
-  //ComputeFakeRateDiJetData("file_jet_data_runA", "HPS", "TightDB", "TFR_DiJet_data_runA");
-  ComputeFakeRateDiJetData("file_jet_data_runA", "HPS", "LooseCombDB", "TFR_DiJet_data_runA");
-  ComputeFakeRateDiJetData("file_jet_data_runA", "HPS", "MediumCombDB", "TFR_DiJet_data_runA");
-  ComputeFakeRateDiJetData("file_jet_data_runA", "HPS", "TightCombDB", "TFR_DiJet_data_runA");
-
-  //ComputeFakeRateDiJetData("file_jet_data_runB", "HPS", "Loose", "TFR_DiJet_data_runB"); 
-  //ComputeFakeRateDiJetData("file_jet_data_runB", "HPS", "Medium", "TFR_DiJet_data_runB"); 
-  //ComputeFakeRateDiJetData("file_jet_data_runB", "HPS", "Tight", "TFR_DiJet_data_runB"); 
-  //ComputeFakeRateDiJetData("file_jet_data_runB", "HPS", "LooseDB", "TFR_DiJet_data_runB"); 
-  //ComputeFakeRateDiJetData("file_jet_data_runB", "HPS", "MediumDB", "TFR_DiJet_data_runB"); 
-  //ComputeFakeRateDiJetData("file_jet_data_runB", "HPS", "TightDB", "TFR_DiJet_data_runB"); 
-  ComputeFakeRateDiJetData("file_jet_data_runB", "HPS", "LooseCombDB", "TFR_DiJet_data_runB"); 
-  ComputeFakeRateDiJetData("file_jet_data_runB", "HPS", "MediumCombDB", "TFR_DiJet_data_runB"); 
-  ComputeFakeRateDiJetData("file_jet_data_runB", "HPS", "TightCombDB", "TFR_DiJet_data_runB");
+  
+  ComputeFakeRateDiJetData("file_jet_dcs", "HPS", "Loose", "TFR_DiJet_data2012_w1_dcs"); 
+  ComputeFakeRateDiJetData("file_jet_dcs", "HPS", "Medium", "TFR_DiJet_data2012_w1_dcs"); 
+  ComputeFakeRateDiJetData("file_jet_dcs", "HPS", "Tight", "TFR_DiJet_data2012_w1_dcs"); 
+  ComputeFakeRateDiJetData("file_jet_dcs", "HPS", "LooseDB", "TFR_DiJet_data2012_w1_dcs"); 
+  ComputeFakeRateDiJetData("file_jet_dcs", "HPS", "MediumDB", "TFR_DiJet_data2012_w1_dcs"); 
+  ComputeFakeRateDiJetData("file_jet_dcs", "HPS", "TightDB", "TFR_DiJet_data2012_w1_dcs"); 
+  ComputeFakeRateDiJetData("file_jet_dcs", "HPS", "LooseCombDB", "TFR_DiJet_data2012_w1_dcs"); 
+  ComputeFakeRateDiJetData("file_jet_dcs", "HPS", "MediumCombDB", "TFR_DiJet_data2012_w1_dcs"); 
+  ComputeFakeRateDiJetData("file_jet_dcs", "HPS", "TightCombDB", "TFR_DiJet_data2012_w1_dcs");
 
   /*
   ComputeFakeRateDiJetMC("HPS", "Loose", "TFR_DiJet_mc");
@@ -615,15 +620,26 @@ void TauFakeRateEstimator::processEvents()
   ComputeFakeRateDiJetMC("HPS", "LooseCombDB", "TFR_DiJet_mc");
   ComputeFakeRateDiJetMC("HPS", "MediumCombDB", "TFR_DiJet_mc");
   ComputeFakeRateDiJetMC("HPS", "TightCombDB", "TFR_DiJet_mc");
-
-  ComputeFakeRateWJet("file_muon", "HPS", "Loose", true, "TFR_WJet_data");
-  ComputeFakeRateWJet("file_muon", "HPS", "Medium", true, "TFR_WJet_data");
-  ComputeFakeRateWJet("file_muon", "HPS", "Tight", true, "TFR_WJet_data");
-  ComputeFakeRateWJet("file_muon", "HPS", "LooseDB", true, "TFR_WJet_data");
-  ComputeFakeRateWJet("file_muon", "HPS", "MediumDB", true, "TFR_WJet_data");
-  ComputeFakeRateWJet("file_muon", "HPS", "TightDB", true, "TFR_WJet_data");
-  ComputeFakeRateWJet("file_muon", "HPS", "LooseCombDB", true, "TFR_WJet_data");
-  ComputeFakeRateWJet("file_muon", "HPS", "MediumCombDB", true, "TFR_WJet_data");
-  ComputeFakeRateWJet("file_muon", "HPS", "TightCombDB", true, "TFR_WJet_data");
   */
+  //ComputeFakeRateWJet("file_muon", "HPS", "Loose", true, "TFR_WJet_data");
+  //ComputeFakeRateWJet("file_muon", "HPS", "Medium", true, "TFR_WJet_data");
+  //ComputeFakeRateWJet("file_muon", "HPS", "Tight", true, "TFR_WJet_data");
+  //ComputeFakeRateWJet("file_muon", "HPS", "LooseDB", true, "TFR_WJet_data");
+  //ComputeFakeRateWJet("file_muon", "HPS", "MediumDB", true, "TFR_WJet_data");
+  //ComputeFakeRateWJet("file_muon", "HPS", "TightDB", true, "TFR_WJet_data");
+  //ComputeFakeRateWJet("file_isomuon", "HPS", "LooseCombDB", true, "TFR_WJet_data2012-w1");
+  //ComputeFakeRateWJet("file_isomuon", "HPS", "MediumCombDB", true, "TFR_WJet_data2012-w1");
+  //ComputeFakeRateWJet("file_isomuon", "HPS", "TightCombDB", true, "TFR_WJet_data2012-w1");
+  
+  ComputeFakeRateWJet("file_isomuon_dcs", "HPS", "Loose", true, "TFR_WJet_data2012-w1-dcs");
+  ComputeFakeRateWJet("file_isomuon_dcs", "HPS", "Medium", true, "TFR_WJet_data2012-w1-dcs");
+  ComputeFakeRateWJet("file_isomuon_dcs", "HPS", "Tight", true, "TFR_WJet_data2012-w1-dcs");
+  ComputeFakeRateWJet("file_isomuon_dcs", "HPS", "LooseDB", true, "TFR_WJet_data2012-w1-dcs");
+  ComputeFakeRateWJet("file_isomuon_dcs", "HPS", "MediumDB", true, "TFR_WJet_data2012-w1-dcs");
+  ComputeFakeRateWJet("file_isomuon_dcs", "HPS", "TightDB", true, "TFR_WJet_data2012-w1-dcs");
+
+  ComputeFakeRateWJet("file_isomuon_dcs", "HPS", "LooseCombDB", true, "TFR_WJet_data2012-w1-dcs");
+  ComputeFakeRateWJet("file_isomuon_dcs", "HPS", "MediumCombDB", true, "TFR_WJet_data2012-w1-dcs");
+  ComputeFakeRateWJet("file_isomuon_dcs", "HPS", "TightCombDB", true, "TFR_WJet_data2012-w1-dcs");
+  
 }

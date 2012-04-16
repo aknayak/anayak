@@ -64,7 +64,7 @@ public :
 
     // muon //////////////////////////////////////////
     M_RELISO_MAX_  = 0.1; 
-    M_PT_MIN_      = 20;  
+    M_PT_MIN_      = 30;  
     M_ETA_MAX_     = 2.1; 
     M_D0_MAX_      = 0.02;
     
