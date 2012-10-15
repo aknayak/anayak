@@ -38,7 +38,7 @@ public :
     defaultSelection_=true;
 
     //Vertex //////
-    ZMAX_    = 1;
+    ZMAX_    = 0.2;
     ZTAUMAX_ = 0.2;
     ///////////////
 
@@ -66,9 +66,9 @@ public :
     M_RELISO_MAX_  = 0.1; 
     M_PT_MIN_      = 30;  
     M_ETA_MAX_     = 2.1; 
-    M_D0_MAX_      = 0.02;
+    M_D0_MAX_      = 0.045;
     
-    LOOSE_M_RELISO_MAX_ = 0.2;
+    LOOSE_M_RELISO_MAX_ = 0.3;
     LOOSE_M_ETA_MAX_    = 2.5;
     LOOSE_M_PT_MIN_     = 10;
     RHO_AEFF_M_         = 0.112;

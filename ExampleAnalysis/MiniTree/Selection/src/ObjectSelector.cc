@@ -46,9 +46,15 @@ void ObjectSelector::preSelectMuons(vector<int> * m_i, const vector<MyMuon> & vM
     double mEta     = TMath::Abs(m->p4.eta());
     double mPt      = TMath::Abs(m->p4.pt());
     double mD0      = fabs(m->D0);
-    double mRelIso  = (isPFlow) ? m->RelIso : m->UserPFRelIso;
+    //double mRelIso  = (isPFlow) ? m->RelIso : m->UserPFRelIso;
+    double mRelIso  = m->pfRelIso;
 
-    bool passId = (m->GlobalMuonPromptTight > 0);
+    bool isGlobalMuon = (m->type & (1<<1));
+    bool isPFMuon = (m->type & (1<<5));
+    //bool passId = (m->GlobalMuonPromptTight > 0);
+    bool passId = (isGlobalMuon && isPFMuon && m->nMuonHits > 0 
+		   && m->nPixelHits > 0 && m->nMatchedStations > 1 
+		   && m->nTrackerLayers > 5 && m->normChi2 < 10); 
 
     double zvertex   = vertex.XYZ.z();
     double zmuon     = m->vertex.z();
@@ -128,7 +134,8 @@ bool ObjectSelector::looseMuonVeto( int selectedMuon, const vector<MyMuon> & vM,
     
     double mEta     = TMath::Abs(m->p4.eta());
     double mPt      = TMath::Abs(m->p4.pt());
-    double mRelIso  = (isPFlow) ? m->RelIso : m->UserPFRelIso;
+    //double mRelIso  = (isPFlow) ? m->RelIso : m->UserPFRelIso;
+    double mRelIso  = m->pfRelIso;
     
     //see if this muon is glogal
     static const unsigned int GlobalMuon     =  1<<1;
