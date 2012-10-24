@@ -1,5 +1,30 @@
 How to use the code :
 
+#Tags  for CMSSW_53X
+#MET correction for PFMET
+addpkg JetMETCorrections/Type1MET V04-06-09
+addpkg PhysicsTools/PatUtils V03-09-23
+addpkg CommonTools/RecoUtils V00-00-13
+addpkg CommonTools/ParticleFlow V00-03-16                              
+addpkg CommonTools/RecoAlgos V00-03-23      
+#addpkg CommonTools/RecoUtils V00-00-13
+addpkg PhysicsTools/PatAlgos V08-09-23      
+#addpkg PhysicsTools/PatUtils V03-09-23      
+addpkg DataFormats/ParticleFlowCandidate V15-03-03
+addpkg DataFormats/TrackReco V10-02-02      
+addpkg DataFormats/VertexReco V02-00-04      
+addpkg DataFormats/StdDictionaries V00-02-14 
+
+#Pileup JetID
+cvs co -r V00-02-10 -d CMGTools/External UserCode/CMG/CMGTools/External
+
+#TTBar Kinematic Fitter
+cvs co AnalysisDataFormats/TopObjects
+cvs co TopQuarkAnalysis/TopJetCombination
+cvs co TopQuarkAnalysis/TopKinFitter
+cvs co TopQuarkAnalysis/TopObjectResolutions
+
+################################################
 cmsrel CMSSW_X_X_X
 cd CMSSW_X_X_X/src
 cmsenv
