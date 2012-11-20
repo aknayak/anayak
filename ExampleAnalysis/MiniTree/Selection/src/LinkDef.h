@@ -2,6 +2,8 @@
 #include "MiniTree/Selection/interface/Reader.h"
 #include "MiniTree/Selection/interface/ObjectSelector.hh"
 #include "MiniTree/Selection/interface/HistogramPlotter.hh"
+#include "MiniTree/Selection/interface/BtagSF.hh"
+#include "MiniTree/Selection/interface/UncertaintyComputer.hh"
 #ifdef __CINT__
 
 #pragma link off all globals;
@@ -27,10 +29,14 @@
 #pragma link C++ class std::vector<MyMuon>;
 #pragma link C++ class MyTau+;
 #pragma link C++ class std::vector<MyTau>;
+#pragma link C++ class MyKineFitParticle+;
+#pragma link C++ class std::vector<MyKineFitParticle>;
 #pragma link C++ class MyEvent+;
 #pragma link C++ class Reader+;
 #pragma link C++ class ObjectSelector+;
 #pragma link C++ class HistogramPlotter+;
+#pragma link C++ class BtagSF+;
+#pragma link C++ class UncertaintyComputer+;
 #endif
 
 

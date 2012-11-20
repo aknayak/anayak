@@ -15,7 +15,7 @@ INC = -I${ROOTSYS}/include -I../../..
 all:
 	@$(MAKE) eventdict.cc; $(MAKE) libMyEvent.so
 
-eventdict.cc: ../interface/MyEvent.h ../interface/MyMCParticle.h ../interface/MyTrack.h ../interface/MyVertex.h ../interface/MyJet.h ../interface/MyMET.h ../interface/MyElectron.h ../interface/MyMuon.h ../interface/MyTau.h ../interface/SampleInfo.h ../interface/Reader.h ../interface/ObjectSelector.hh ../interface/HistogramPlotter.hh LinkDef.h
+eventdict.cc: ../interface/MyEvent.h ../interface/MyMCParticle.h ../interface/MyTrack.h ../interface/MyVertex.h ../interface/MyJet.h ../interface/MyMET.h ../interface/MyElectron.h ../interface/MyMuon.h ../interface/MyTau.h ../interface/SampleInfo.h ../interface/MyKineFitParticle.h ../interface/Reader.h ../interface/ObjectSelector.hh ../interface/HistogramPlotter.hh ../interface/BtagSF.hh ../interface/UncertaintyComputer.hh LinkDef.h
 	rootcint -f eventdict.cc -c -I${PWD}/../../.. -p \
 	MiniTree/Selection/interface/MyEvent.h \
 	MiniTree/Selection/interface/MyMET.h \
@@ -27,9 +27,12 @@ eventdict.cc: ../interface/MyEvent.h ../interface/MyMCParticle.h ../interface/My
 	MiniTree/Selection/interface/MyMuon.h \
 	MiniTree/Selection/interface/MyTau.h \
 	MiniTree/Selection/interface/SampleInfo.h \
+	MiniTree/Selection/interface/MyKineFitParticle.h \
 	MiniTree/Selection/interface/Reader.h \
 	MiniTree/Selection/interface/ObjectSelector.hh \
 	MiniTree/Selection/interface/HistogramPlotter.hh \
+	MiniTree/Selection/interface/BtagSF.hh \
+	MiniTree/Selection/interface/UncertaintyComputer.hh \
 	MiniTree/Selection/src/LinkDef.h
 	
 compile: $(OBJS)

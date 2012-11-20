@@ -110,18 +110,20 @@ void ObjectSelector::preSelectTaus( vector<int> * t_i, const vector<MyTau> & vT,
   }
 }
     
-void ObjectSelector::preSelectJets( string jetAlgo, vector<int> * j_i, const vector<MyJet> & vJ){
+void ObjectSelector::preSelectJets( string jetAlgo, vector<int> * j_i, const vector<MyJet> & vJ, int jes, int jer){
   
   for(unsigned int i=0;i<vJ.size();i++){
     
     const MyJet *jet = &vJ[i];
     double jetEta     = TMath::Abs(jet->p4.eta());
-    double jetPt      = TMath::Abs(jet->p4.pt());
+    //double jetPt      = TMath::Abs(jet->p4.pt());
+    double jetPt      = jetPtWithJESJER(vJ[i], jes, jer); 
 
     if(jetPt > JET_PT_MIN_ && jetEta < JET_ETA_MAX_ )
       { j_i->push_back(i);}
   }
 }
+
 bool ObjectSelector::looseMuonVeto( int selectedMuon, const vector<MyMuon> & vM, bool isPFlow){
 
   bool looseVeto(false);

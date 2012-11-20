@@ -15,7 +15,7 @@ MyEvent::MyEvent() :
   //tracks.clear();
   PrimaryVtxs.clear();
   mcParticles.clear();
-  
+  KineFitParticles.clear();
 }
 
 MyEvent::~MyEvent()
@@ -39,6 +39,7 @@ void MyEvent::Reset()
   //tracks.clear();
   PrimaryVtxs.clear();
   mcParticles.clear();
+  KineFitParticles.clear();
 
   eventQuality = -1;
 }

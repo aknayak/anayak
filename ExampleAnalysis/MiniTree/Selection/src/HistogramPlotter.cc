@@ -92,12 +92,12 @@ void HistogramPlotter::add2DHisto(TString name, TString dirname, int range1, dou
 }
 
 
-void HistogramPlotter::fillHisto(TString name, TString dirname, double value)
+void HistogramPlotter::fillHisto(TString name, TString dirname, double value, double weight)
 {
   //TString fullname = name+"_"+dirname;
   //TString fullname = dirname+"/"+name;
   TH1* h = getHisto(name, dirname);
-  if(h != 0) h->Fill(value);
+  if(h != 0) h->Fill(value, weight);
 }
 
 TH1* HistogramPlotter::getHisto(TString name, TString dirname)

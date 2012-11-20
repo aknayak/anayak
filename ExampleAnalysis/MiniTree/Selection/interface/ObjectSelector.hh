@@ -22,13 +22,14 @@
 #else
 #include "MiniTree/Selection/interface/Reader.h"
 #endif
+#include "MiniTree/Selection/interface/UncertaintyComputer.hh"
 
 #endif
 
-class ObjectSelector{
-
-public :
-  ObjectSelector()
+class ObjectSelector : public UncertaintyComputer
+{
+public : 
+  ObjectSelector() : UncertaintyComputer()
   {
     setDefaultSelection();
   }
@@ -85,7 +86,7 @@ public :
   // preselection of objects
   void preSelectElectrons(vector<int> * e_i, const vector<MyElectron> & vE , MyVertex & vertex, bool isPFlow=false);
   void preSelectMuons(vector<int> * m_i, const vector<MyMuon> & vM , MyVertex & vertex, bool isPFlow=false);
-  void preSelectJets( string jetAlgo, vector<int> * j_i, const vector<MyJet> & vJ);
+  void preSelectJets( string jetAlgo, vector<int> * j_i, const vector<MyJet> & vJ, int jes=0, int jer=0);
   void preSelectTaus( vector<int> * t_i, const vector<MyTau> & vT, int requiredProngs ,string type, MyVertex & vertex);
 
   //Loose Lepton veto

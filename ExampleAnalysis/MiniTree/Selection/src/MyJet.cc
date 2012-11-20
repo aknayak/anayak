@@ -32,6 +32,10 @@ MyJet::MyJet():
   //isLOOSE(-1),
   //isTIGHT(-1),
   jetIDLoose(false),
+  puIDMVALoose(0), 
+  puIDMVAMedium(0), 
+  puIDMVATight(0), 
+  puIDMVADiscr(0),
   etaetaMoment(0.),
   phiphiMoment(0.),
   quality(0),
@@ -53,6 +57,7 @@ MyJet::~MyJet()
 void MyJet::Reset()
 {
   p4.SetCoordinates(0.0, 0.0, 0.0, 0.0);
+  Genp4.SetCoordinates(0.0, 0.0, 0.0, 0.0);
   vertex.SetCoordinates(-999.0,-999.0,-999.0);
   tau_vertex.SetCoordinates(-999.0,-999.0,-999.0);
 
@@ -85,6 +90,10 @@ void MyJet::Reset()
   //isLOOSE = -1;
   //isTIGHT = -1;
   jetIDLoose = false;
+  puIDMVALoose = 0;  
+  puIDMVAMedium = 0;  
+  puIDMVATight = 0;  
+  puIDMVADiscr = 0;
   etaetaMoment = 0.;
   phiphiMoment = 0.;
 
