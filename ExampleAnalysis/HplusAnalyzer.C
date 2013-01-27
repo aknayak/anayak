@@ -31,7 +31,7 @@ public :
     DRMIN_JET = 0.5;
     DRMIN_ELE = 0.5;
     METCUT_   = 30.0;
-
+    /*
     std::vector<float> MCPUDist, DataPUDist;
     float dataDist_2012A[60] = {1.82661e-05,0.000124476,0.000494428,0.00141418,0.00322671,0.0062338,0.0105956,0.0162651,0.0229752,0.0302751,0.0376034,0.0443794,0.0500918,0.0543697,0.0570214,0.0580386,0.057568,0.0558629,0.0532267,0.0499626,0.0463369,0.0425599,0.0387819,0.0351004,0.0315723,0.0282278,0.0250814,0.0221399,0.0194073,0.0168863,0.0145789,0.0124856,0.0106047,0.0089316,0.00745897,0.00617645,0.00507131,0.00412902,0.0033339,0.00266978,0.0021206,0.00167088,0.00130612,0.00101301,0.000779625,0.000595444,0.000451357,0.000339596,0.000253632,0.000188051,0,0,0,0,0,0,0,0,0,0};
     
@@ -41,9 +41,14 @@ public :
       DataPUDist.push_back(dataDist_2012A[i]);
       MCPUDist.push_back(mc_Dist[i]);
     }
-    
     LumiWeights_ = reweight::LumiReWeighting(MCPUDist, DataPUDist);
+    */
+
+    LumiWeights_ = reweight::LumiReWeighting("MC_Pileup_Summer2012_600bins.root","Data_Pileup_2012ABC_600bins.root", "pileup", "pileup"); //crashes, don't know why
     
+    PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
+    PShiftUp_ = reweight::PoissonMeanShifter(0.5);
+
     //cross sections
     xss["WJETS"] = 36257.0; 
     xss["TTBAR"] = 225.2; 
@@ -51,7 +56,9 @@ public :
     xss["QCD"]   = 134680; 
     xss["TOPT"]  = 11.1; 
   };
-  ~HplusAnalyzer() {};
+  ~HplusAnalyzer() {
+    delete evR;
+  };
   
   void CutFlowAnalysis(TString url,  string myKey="PFlow", bool isData = true, string evtType="data");
   void CutFlowProcessor(TString url,  string myKey="PFlow", TString cutflowType="base", bool isData = true, TFile *outFile_=0);
@@ -63,6 +70,8 @@ private :
   Reader *evR;
   
   reweight::LumiReWeighting LumiWeights_;
+  reweight::PoissonMeanShifter PShiftUp_; //pileup syst up
+  reweight::PoissonMeanShifter PShiftDown_; //pileup syst down
   std::map<string, double> xss;
   ofstream outfile_;
 };
@@ -79,14 +88,16 @@ void HplusAnalyzer::CutFlowAnalysis(TString url, string myKey, bool isData, stri
   outfile_.open(debug_file.c_str());
 
   CutFlowProcessor(url, myKey, "base", isData, outFile_);
-  CutFlowProcessor(url, myKey, "JESPlus", isData, outFile_);
-  CutFlowProcessor(url, myKey, "JESMinus", isData, outFile_);
-  CutFlowProcessor(url, myKey, "JERPlus", isData, outFile_);
-  CutFlowProcessor(url, myKey, "JERMinus", isData, outFile_);
-  CutFlowProcessor(url, myKey, "METUCPlus", isData, outFile_);
-  CutFlowProcessor(url, myKey, "METUCMinus", isData, outFile_);
-  CutFlowProcessor(url, myKey, "bTagPlus", isData, outFile_);
-  CutFlowProcessor(url, myKey, "bTagMinus", isData, outFile_);
+  //CutFlowProcessor(url, myKey, "JESPlus", isData, outFile_);
+  //CutFlowProcessor(url, myKey, "JESMinus", isData, outFile_);
+  //CutFlowProcessor(url, myKey, "JERPlus", isData, outFile_);
+  //CutFlowProcessor(url, myKey, "JERMinus", isData, outFile_);
+  //CutFlowProcessor(url, myKey, "METUCPlus", isData, outFile_);
+  //CutFlowProcessor(url, myKey, "METUCMinus", isData, outFile_);
+  //CutFlowProcessor(url, myKey, "bTagPlus", isData, outFile_);
+  //CutFlowProcessor(url, myKey, "bTagMinus", isData, outFile_);
+  //CutFlowProcessor(url, myKey, "PUPlus", isData, outFile_); 
+  //CutFlowProcessor(url, myKey, "PUMinus", isData, outFile_);
   
   outfile_.close();
   outFile_->Write(); 
@@ -115,9 +126,9 @@ void HplusAnalyzer::CutFlowProcessor(TString url,  string myKey, TString cutflow
   else if (cutflowType.Contains("bTagMinus"))bscale = -1; 
 
   double Lumi = 1000.0;
-  
+
   evR = new Reader();
-  
+
   TFile *f = TFile::Open(url);
   if(f==0) return ;
   if(f->IsZombie()) { f->Close(); return; }
@@ -126,10 +137,8 @@ void HplusAnalyzer::CutFlowProcessor(TString url,  string myKey, TString cutflow
   if( nEntries == 0) {return; }
 
   //get initial number of events
-
   TH1F* inputcf = (TH1F*)(f->Get("allEventsFilter/totalEvents"))->Clone("inputcf");
   double initialEvents = inputcf->GetBinContent(1);
-
   outfile_<<"Input file : "<<url<<endl;
   outfile_<<"Available input sample : "<<initialEvents<<endl;
   
@@ -160,17 +169,21 @@ void HplusAnalyzer::CutFlowProcessor(TString url,  string myKey, TString cutflow
       }
       evtWeight *= sampleWeight; // upto this only sigma*lumi weight is applied
       
-      //vector<double>puweights = ev->sampleInfo.puWeights;  // this line and below this line applies the pile up corrections
-      
-
+      //vector<double>puweights = ev->sampleInfo.puWeights;
       //if(puweights.size() > 0) evtWeight *= puweights[0];
-      vector<double>pu = ev->sampleInfo.pileup;
-      
+
+      //vector<double>pu = ev->sampleInfo.pileup;
+      vector<double>pu = ev->sampleInfo.truepileup;
       if(pu.size() > 0) {
-	int npu = pu[0];
-	double weight = LumiWeights_.ITweight(npu);
+	//int npu = pu[0];
+	float npu = pu[0];
+	//double weight = LumiWeights_.ITweight(npu);
+	double weight = LumiWeights_.weight(npu);
 	//	cout<<"pu weight"<<weight<<endl;
-	evtWeight *= weight;  // pile up weight is also applied
+	if (cutflowType.Contains("PUPlus"))weight = weight*PShiftUp_.ShiftWeight( npu ); 
+	else if (cutflowType.Contains("PUMinus"))weight = weight*PShiftDown_.ShiftWeight( npu );
+	evtWeight *= weight;
+	cout<<" pileup weight "<<weight<<endl;
       }
       
     }
@@ -314,5 +327,7 @@ void HplusAnalyzer::CreateAnalHistos(TString cutflowType, TFile* outFile_)
 
 void HplusAnalyzer::processEvents(){ 
   //CutFlowAnalysis("/tmp/gkole/8TeV/53x/wjet/wjet_su12_all.root", "PF",false, "wjet"); 
-  CutFlowAnalysis("/tmp/gkole/8TeV/53x/ttjet/ttjet_su12_all.root", "PF",false, "ttbar");
+  //CutFlowAnalysis("/tmp/gkole/8TeV/53x/ttjet/ttjet_su12_all.root", "PF",false, "ttbar");
+  CutFlowAnalysis("ttjet_all.root", "PF",false, "ttbar");
+  //CutFlowAnalysis("/afs/cern.ch/work/a/anayak/CMS/HPlusCSbar/CMSSW_5_3_5/src/MiniTree/Selection/test/mc_tau.root", "PF",false, "ttbar");
 } 
