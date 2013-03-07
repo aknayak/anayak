@@ -1,0 +1,40 @@
+Date: XXX
+Description: H+, mu+jets, mass YYY GeV, lumi=ZZZ fb-1
+------------------------------------------------------------------------------------------------------------------
+imax   1  number of channels
+jmax   *  number of backgrounds
+kmax   *  number of nuisance parameters
+------------------------------------------------------------------------------------------------------------------
+shapes * * XXX.root $PROCESS $PROCESS_$SYSTEMATIC
+------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+Observation    XXX
+------------------------------------------------------------------------------------------------------------------
+bin           1         1          1          1           1           1           1           1           1
+process     HHXXX     WHYYY       ttbar      ttll        wjet        zjet        qcd         stop       diboson 
+process      -1         0          1          2           3           4           5           6           7
+-------------------------------------------------------------------------------------------------------------------
+rate                                                                                           Projected event rates
+-------------------------------------------------------------------------------------------------------------------
+
+lumi          lnN   1.05      1.05       1.05      1.00      1.05      1.05      1.05      1.05      1.05    Luminosity Error
+#CMS_jetmet    lnN   1.10      1.10       1.06      1.00      1.22      1.30      1.30      1.30     1.10    JES/JER/MET scale
+CMS_eff_mu    lnN   1.01      1.01       1.01      1.00      1.01      1.01      1.01      1.01      1.01    Lepton Efficiency
+CMS_eff_b     lnN   XXXX      YYYY       ZZZZ      1.00      1.00      1.00      1.00      KKKK      1.00    b-tagging
+CMS_mistag_b  lnN   1.00      1.00       1.00      1.00      XXXX      YYYY      ZZZZ      1.00      KKKK    b-mis-tagging
+CMS_stat_hh   lnN   XXXX      1.00       1.00      1.00      1.00      1.00      1.00      1.00      1.00    HH MC stat
+CMS_stat_wh   lnN   1.00      XXXX       1.00      1.00      1.00      1.00      1.00      1.00      1.00    WH MC stat
+CMS_stat_tt   lnN   1.00      1.00       XXXX      1.00      1.00      1.00      1.00      1.00      1.00    ttbar MC stat 
+CMS_stat_zjet lnN   1.00      1.00       1.00      1.00      1.00      XXXX      1.10      1.00      1.00    Zjet MC stat
+CMS_stat_wjet lnN   1.00      1.00       1.00      1.00      XXXX      1.00      1.00      1.00      1.00    W+jets MC stat
+CMS_stat_stop lnN   1.00      1.00       1.00      1.00      1.00      1.00      1.00      XXXX      1.00    single top MC stat
+CMS_stat_vv   lnN   1.00      1.00       1.00      1.00      1.00      1.00      1.00      1.00      XXXX    diboson MC stat
+CMS_stat_qcd  lnN   1.00      1.00       1.00      1.00      1.00      1.00      XXXX      1.00      1.00    qcd MC stat	      
+CMS_norm_tt   lnN   1.10      1.10       1.10      1.00      1.00      1.00      1.00      1.00      1.00    ttbar cross-section
+CMS_norm_wjet lnN   1.00      1.00       1.00      1.00      1.05      1.00      1.00      1.00      1.00    W+jets cross section
+CMS_norm_stop lnN   1.00      1.00       1.00      1.00      1.00      1.00      1.00      1.06      1.00    singleTop cross-section
+CMS_norm_zjet lnN   1.00      1.00       1.00      1.00      1.00      1.04      1.00      1.00      1.00    Z->ll cross section
+CMS_norm_qcd  lnN   1.00      1.00       1.00      1.00      1.00      1.00      1.50      1.00      1.00    qcd cross section
+CMS_norm_vv   lnN   1.00      1.00       1.00      1.00      1.00      1.00      1.00      1.00      1.10    VV cross section
+#CMS_pileup    lnN   1.02      1.02       1.02      1.02      1.02      1.02      1.04      1.02      1.00     pileup
+JES          shape  1.00      1.00       1.00      1.00      1.00      1.00      1.00      1.00      1.00    JES Up/Down
